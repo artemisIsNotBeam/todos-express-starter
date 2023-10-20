@@ -10,7 +10,7 @@ var session = require('express-session')
 
 var SQLiteStore = require('connect-sqlite3')(session);
 
-var indexRouter = require('./routes/exampleIndex');
+var indexRouter = require('./routes/index.js');
 var authRouter = require('./routes/auth');
 var app = express();
 

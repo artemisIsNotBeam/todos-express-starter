@@ -4,42 +4,40 @@ var crypto = require('crypto');
 
 mkdirp.sync('var/db');
 
-var db = new sqlite3.Database('var/db/todos.db');
+var db = new sqlite3.Database('var/db/database.db');
 
 db.serialize(function() {
-  // create the database schema for the todos app
-  db.run("CREATE TABLE IF NOT EXISTS users ( \
-    id INTEGER PRIMARY KEY, \
-    username TEXT UNIQUE, \
-    hashed_password BLOB, \
-    salt BLOB, \
-    name TEXT, \
-    email TEXT UNIQUE, \
-    email_verified INTEGER \
-  )");
-  
-  db.run("CREATE TABLE IF NOT EXISTS federated_credentials ( \
-    id INTEGER PRIMARY KEY, \
-    user_id INTEGER NOT NULL, \
-    provider TEXT NOT NULL, \
-    subject TEXT NOT NULL, \
-    UNIQUE (provider, subject) \
-  )");
-  
-  db.run("CREATE TABLE IF NOT EXISTS todos ( \
-    id INTEGER PRIMARY KEY, \
-    owner_id INTEGER NOT NULL, \
-    title TEXT NOT NULL, \
-    completed INTEGER \
-  )");
-  
-  // create an initial user (username: alice, password: letmein)
-  var salt = crypto.randomBytes(16);
-  db.run('INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)', [
-    'alice',
-    crypto.pbkdf2Sync('letmein', salt, 310000, 32, 'sha256'),
-    salt
+
+  db.run(`CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    name VARCHAR(50), 
+    description VARCHAR(200), 
+    price DECIMAL(10,2)
+  );`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS carts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner INTEGER,
+    FOREIGN KEY(owner) REFERENCES users(id)
+  );`);  // Corrected FOREIGN KEY syntax and removed trailing comma
+
+
+  db.run(`CREATE TABLE IF NOT EXISTS cartItems (
+    cartId INTEGER,
+    productId INTEGER,
+    quantity INTEGER,
+    PRIMARY KEY (cartId, productId),
+    FOREIGN KEY(cartId) REFERENCES carts(id),
+    FOREIGN KEY(productId) REFERENCES products(id)
+  );`);  // Corrected table structure
+
+    /*
+  db.run('INSERT OR IGNORE INTO products (name, description, price) VALUES (?, ?, ?);', [
+    'milk',
+    'it comes from cows, is rich in calcium',
+    10.50
   ]);
+  */
 });
 
 module.exports = db;

@@ -1,0 +1,123 @@
+openapi: 3.0.1
+info:
+  title: E commerece API
+  version: 1.0.0
+paths:
+  /login:
+    summary: login, takes user and pwd
+    description: checks user name, pwd with database
+    get:
+      summary: attempt to login, send username, pwd
+      description: checks the username and password with the sql database=
+      operationId: login
+      responses:
+        default:
+          description: success!
+      tags:
+        - user
+  /signup:
+    summary: signs up with provided pwd and login
+    description: adds to users table :)
+    get:
+      summary: sign up takes, user and pwd
+      description: adds it to the sql database
+      operationId: signup
+      responses:
+        default:
+          description: success!
+      tags:
+        - user
+  /account:
+    summary: deals with the user database
+    description: edits username table
+    put:
+      summary: edits!
+      description: hanges user table
+      operationId: edit_account
+      responses:
+        default:
+          description: username followed by password
+      tags:
+        - user
+    delete:
+      summary: deletes account
+      description: adds it to the sql database
+      operationId: delete_account
+      responses:
+        default:
+          description: success!
+      tags:
+        - user
+  /products:
+    summary: products avialable
+    get:
+      summary: see what products are avialable
+      description: returns products
+      operationId: get_products
+      responses:
+        default:
+          description: the whole dam product table
+      tags:
+        - products
+    post:
+      summary: add a product
+      description: adds product to product table
+      operationId: add_product
+      responses:
+        default:
+          description: success!
+      tags:
+        - products
+    put:
+      summary: edit the product
+      description: edits the product table
+      operationId: edit_product
+      responses:
+        default:
+          description: the updated product
+      tags:
+        - products
+    delete:
+      summary: deletes the product
+      description: deletes the item
+      operationId: delete_product
+      responses:
+        default:
+          description: success!
+      tags:
+        - products
+  /cart:
+    summary: user's cart
+    get:
+      summary: see whats in your cart
+      operationId: get_cart
+      responses:
+        default:
+          description: list of items in user's cart
+      tags:
+        - cart
+    post:
+      summary: add to cartt
+      operationId: post_cart
+      responses:
+        default:
+          description: item just added
+      tags:
+        - cart
+    put:
+      summary: edits cart
+      operationId: put_cart
+      responses:
+        default:
+          description: success!
+      tags:
+        - cart
+    delete:
+      summary: removes item from cart
+      operationId: delete_card
+      responses:
+        default:
+          description: success!
+      tags:
+        - cart
+        
