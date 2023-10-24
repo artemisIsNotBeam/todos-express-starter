@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
   }
   next();
 }, function(req, res, next) {
-  res.send("hi now");
+  res.send("hi now, if you are seeing  this, you are logged in");
 });
 
 router.get('/products', (req, res, next) => {
@@ -54,10 +54,8 @@ router.post('/products', (req, res, next)=>{
     req.body.price
   ], function(err) {
     if (err) { return next(err); }
-    return res.redirect('/' + (req.body.filter || ''));
+    res.status(200).send('product added');
   });
-
-  res.status(200).send('product added');
 });
 
 router.put('/products/:id', (req, res, next) => {
@@ -78,10 +76,36 @@ router.put('/products/:id', (req, res, next) => {
     id
   ], function(err) {
     if (err) { return next(err); }
-    return res.redirect('/' + (req.body.filter || ''));
+    res.status(200).send('product edited');
   });
-
-  res.status(200).send('product edited');
 });
+
+router.delete('/products/:id', (req, res, next)=>{
+  if (req.body.title !==''){
+    return next();
+  }
+  return res.redirect('/products' + (req.body.filter || ''));
+}, function(req, res, next){
+  const id =req.params.id;
+
+  db.run(`DELETE FROM products
+  WHERE id = ?;`, [
+    id
+  ], function(err) {
+    if (err) { return next(err); }
+    res.status(200).send('product deleted');
+  });
+});
+
+router.get('/cart',(req,res,next)=>{
+  if (req.user){
+    return next();
+  } else{
+    res.send("must login to use this page");
+  }
+}, function(req,res,next) {
+  res.send("hi");
+});
+
 
 module.exports = router;
