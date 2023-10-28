@@ -97,15 +97,45 @@ router.delete('/products/:id', (req, res, next)=>{
   });
 });
 
-router.get('/cart',(req,res,next)=>{
-  if (req.user){
-    return next();
-  } else{
-    res.send("must login to use this page");
+router.get('/cart', function(req, res, next) {
+  if (!req.user) { 
+    return res.render('home'); 
   }
-}, function(req,res,next) {
-  res.send("hi");
+  next();
+}, function(req,res,next){
+  new Promise((resolve, reject) => {
+    db.all('SELECT * FROM cartItems', function(err, rows) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  })
+  .then((products) => {
+    res.json(products);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error getting products');
+  });
 });
+
+//should be post and 
+router.get('/cartAdd/:id',function(req, res, next) {
+  let id=req.user["id"];
+  let productId=req.params.id;
+  let quantity = req.params.id;
+
+  db.run(`INSERT INTO cartItems (userId, productId, quantity) VALUES (?, ?, ?)`,[
+    id,
+    productId,
+    1
+  ], function(err) {
+    if (err) { return next(err); }
+    res.status(200).send('items added');
+  });
+})
 
 
 module.exports = router;
