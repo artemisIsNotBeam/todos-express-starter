@@ -104,7 +104,9 @@ router.get('/cart', function(req, res, next) {
   next();
 }, function(req,res,next){
   new Promise((resolve, reject) => {
-    db.all('SELECT * FROM cartItems', function(err, rows) {
+    db.all('SELECT productId, quantity FROM cartItems WHERE userId = ?;',[
+      req.user["id"]
+    ], function(err, rows) {
       if (err) {
         reject(err);
       } else {
@@ -121,19 +123,45 @@ router.get('/cart', function(req, res, next) {
   });
 });
 
-//should be post and 
-router.get('/cartAdd/:id',function(req, res, next) {
-  let id=req.user["id"];
+//should be post and /cart
+router.post('/cart/:id/:quantity',function(req, res, next) {
+  if (!req.user) { 
+  return res.render('home'); 
+}
+next();
+}, function(req,res,next){
+  let userId=req.user["id"];
   let productId=req.params.id;
   let quantity = req.params.id;
 
-  db.run(`INSERT INTO cartItems (userId, productId, quantity) VALUES (?, ?, ?)`,[
-    id,
-    productId,
-    1
-  ], function(err) {
+  let exists = db.get(`SELECT 1 FROM cartItems WHERE userId = ? AND productId = ?`, [userId, productId]);
+  if (exists) {
+    db.run(`UPDATE cartItems SET quantity = quantity + ? WHERE userId = ? AND productId = ?`, [quantity, userId, productId],
+    function(err) {
+      if (err) { return next(err); }
+      res.status(200).send('product added to cart');
+    }); 
+  } else{
+    db.run(`INSERT INTO cartItems (userId, productId, quantity) VALUES (?, ?, ?)`, [userId, productId, quantity],function(err) {
+      if (err) { return next(err); }
+      res.status(200).send('product added to cart');
+    });
+  }
+})
+
+//
+router.delete('/cart/:id',function(req,res,next){
+  if (!req.user) { 
+  return res.render('home'); 
+}
+next();
+}, function(req,res,next){
+  db.run(`DELETE FROM cartItems WHERE userId= ? and productId=?`,[
+    req.user["id"],
+    req.params.id
+  ], function(err){
     if (err) { return next(err); }
-    res.status(200).send('items added');
+      res.status(200).send('deleted');
   });
 })
 
