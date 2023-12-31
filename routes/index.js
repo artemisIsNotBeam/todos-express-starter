@@ -1,9 +1,15 @@
 var express = require('express');
 var db = require('../db');
+var path = require('path');
 
 var router = express.Router();
 
 // TEST USING insomnia
+
+
+router.get('/testReact', function(req,res,next){
+  res.sendFile(path.join(__dirname,'..', 'frontendReact', 'build', 'index.html'));
+});
 
 router.get('/', function(req, res, next) {
   if (!req.user) { 
@@ -19,7 +25,7 @@ router.get('/products', (req, res, next) => {
   new Promise((resolve, reject) => {
     db.all('SELECT * FROM products', function(err, rows) {
       if (err) {
-        reject(err);
+        reject(err);  
       } else {
         resolve(rows);
       }
@@ -36,7 +42,6 @@ router.get('/products', (req, res, next) => {
 
 /*
 example input
-
 {
 	"name":"pie",
 	"desc":"paste in bread/crust",
@@ -149,7 +154,7 @@ next();
   }
 })
 
-//
+
 router.delete('/cart/:id',function(req,res,next){
   if (!req.user) { 
   return res.render('home'); 

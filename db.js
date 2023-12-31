@@ -35,12 +35,9 @@ db.serialize(function() {
     FOREIGN KEY(productId) REFERENCES products(id)
   );`);  // Corrected table structure
 
-
-  db.run('INSERT OR IGNORE INTO products (name, description, price) VALUES (?, ?, ?);', [
-    'milk',
-    'it comes from cows, is rich in calcium',
-    10.50
-  ]);
+  
+  //db.run("DELETE FROM products WHERE id != 1;");
+  
 
   var salt = crypto.randomBytes(16);
   db.run('INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)', [

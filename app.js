@@ -14,6 +14,7 @@ var indexRouter = require('./routes/index.js');
 var authRouter = require('./routes/auth');
 var app = express();
 
+
 app.locals.pluralize = require('pluralize');
 
 // view engine setup
@@ -52,6 +53,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// gets the static files from the frontendReact
+
 
 module.exports = app;
 console.log("go to http://localhost:3000/")
