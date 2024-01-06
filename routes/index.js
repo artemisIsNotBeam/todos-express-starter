@@ -6,11 +6,6 @@ var router = express.Router();
 
 // TEST USING insomnia
 
-
-router.get('/testReact', function(req,res,next){
-  res.sendFile(path.join(__dirname,'..', 'frontendReact', 'build', 'index.html'));
-});
-
 router.get('/', function(req, res, next) {
   if (!req.user) { 
     return res.render('home'); 
