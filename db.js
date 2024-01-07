@@ -37,7 +37,7 @@ db.serialize(function() {
 
   
   //db.run("DELETE FROM products WHERE id != 1;");
-  
+  //db.run(`INSERT INTO cartItems (userId, productId, quantity) VALUES (1, 1, 3)`)
 
   var salt = crypto.randomBytes(16);
   db.run('INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)', [

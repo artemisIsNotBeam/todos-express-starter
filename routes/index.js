@@ -10,9 +10,7 @@ router.get('/', function(req, res, next) {
   if (!req.user) { 
     return res.render('home'); 
   }
-  next();
-}, function(req, res, next) {
-  res.send("hi now, if you are seeing  this, you are logged in");
+  res.send(req.user);
 });
 
 router.get('/products', (req, res, next) => {
@@ -125,10 +123,10 @@ router.get('/cart', function(req, res, next) {
 
 //should be post and /cart
 router.post('/cart/:id/:quantity',function(req, res, next) {
-  if (!req.user) { 
-  return res.render('home'); 
-}
-next();
+    if (!req.user) { 
+    return res.render('home'); 
+  }
+  next();
 }, function(req,res,next){
   let userId=req.user["id"];
   let productId=req.params.id;
