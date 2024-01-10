@@ -33,6 +33,34 @@ router.get('/products', (req, res, next) => {
   });
 });
 
+
+router.get('/products/:id', (req, res, next) => {
+  const productId = req.params.id;
+
+  new Promise((resolve, reject) => {
+    db.get('SELECT * FROM products WHERE id = ?', [productId], function(err, row) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  })
+  .then((product) => {
+    if (product) {
+      res.json(product);
+    } else {
+      res.status(404).send('Product not found');
+    }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error getting product');
+  });
+});
+
+
+
 /*
 example input
 {
