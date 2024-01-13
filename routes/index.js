@@ -155,23 +155,43 @@ router.post('/cart/:id/:quantity',function(req, res, next) {
     return res.render('home'); 
   }
   next();
-}, function(req,res,next){
+}, async function(req,res,next){
   let userId=req.user["id"];
   let productId=req.params.id;
   let quantity = req.params.id;
+  console.log(userId,productId,quantity);
 
-  let exists = db.get(`SELECT 1 FROM cartItems WHERE userId = ? AND productId = ?`, [userId, productId]);
-  if (exists) {
-    db.run(`UPDATE cartItems SET quantity = quantity + ? WHERE userId = ? AND productId = ?`, [quantity, userId, productId],
-    function(err) {
-      if (err) { return next(err); }
-      res.status(200).send('product added to cart');
-    }); 
-  } else{
-    db.run(`INSERT INTO cartItems (userId, productId, quantity) VALUES (?, ?, ?)`, [userId, productId, quantity],function(err) {
-      if (err) { return next(err); }
-      res.status(200).send('product added to cart');
+  try {
+    let exists = await new Promise((resolve, reject) => {
+      db.get(`SELECT 1 FROM cartItems WHERE userId = ? AND productId = ?`, [userId, productId], (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(row);
+        }
+      });
     });
+
+    console.log(exists);
+
+    if (exists) {
+      // Product exists in cart, update quantity
+      db.run(`UPDATE cartItems SET quantity = quantity + ? WHERE userId = ? AND productId = ?`, [quantity, userId, productId],
+        function(err) {
+          if (err) { return next(err); }
+          res.status(200).send('Product quantity updated in cart');
+        }
+      ); 
+    } else {
+      // Product does not exist in cart, insert new
+      db.run(`INSERT INTO cartItems (userId, productId, quantity) VALUES (?, ?, ?)`, [userId, productId, quantity], function(err) {
+        if (err) { return next(err); }
+        console.log("New product added to cart");
+        res.status(200).send('Product added to cart');
+      });
+    }
+  } catch (err) {
+    return next(err);
   }
 })
 
